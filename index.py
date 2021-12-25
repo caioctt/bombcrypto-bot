@@ -157,8 +157,6 @@ def show(rectangles, img = None):
 
 
 
-
-
 def clickBtn(img,name=None, timeout=3, threshold = ct['default']):
     logger(None, progress_indicator=True)
     if not name is None:
@@ -243,6 +241,25 @@ def clickButtons():
             logger('too many hero clicks, try to increase the go_to_work_btn threshold')
             return
     return len(buttons)
+
+def treasureCount():
+    chestTroll = positions(images['troll-chest'], threshold=ct['troll-chest'])
+    logger('🟩 %d troll chest detected' % len(chestTroll))
+
+    chestWooden = positions(images['wood-chest'], threshold=ct['wood-chest'])
+    logger('🟩 %d wooden chest detected' % len(chestWooden))
+
+    chestUncommon = positions(images['uncommon-chest'], threshold=ct['uncommon-chest'])
+    logger('🟩 %d uncommon chest detected' % len(chestUncommon))
+
+    chestGold = positions(images['gold-chest'], threshold=ct['gold-chest'])
+    logger('🟩 %d gold chest detected' % len(chestGold))
+
+    chestDiamond = positions(images['diamond-chest'], threshold=ct['diamond-chest'])
+    logger('🟩 %d diamond chest detected' % len(chestDiamond))
+
+    chestJail = positions(images['jail-chest'], threshold=ct['jail-chest'])
+    logger('🟩 %d jail chest detected' % len(chestJail))
 
 def isHome(hero, buttons):
     y = hero[1]
@@ -481,7 +498,8 @@ def main():
     "heroes" : 0,
     "new_map" : 0,
     "check_for_captcha" : 0,
-    "refresh_heroes" : 0
+    "refresh_heroes" : 0,
+    "check_chest": 0,
     }
 
     while True:
@@ -506,11 +524,14 @@ def main():
             if clickBtn(images['new-map']):
                 loggerMapClicked()
 
-
         if now - last["refresh_heroes"] > addRandomness( t['refresh_heroes_positions'] * 60):
             solveCaptcha(pause)
             last["refresh_heroes"] = now
             refreshHeroesPositions()
+
+        if now - last["check_chest"] > addRandomness( t['check_chest'] * 60):
+            last["check_chest"] = now
+            treasureCount()
 
         #clickBtn(teasureHunt)
         logger(None, progress_indicator=True)
