@@ -88,12 +88,12 @@ threshold:
   # Valor padrão: 0.9
   green_bar: 0.9
 
-  chest_troll: 0.9
-  chest_wooden: 0.9
-  chest_uncommon: 0.9
-  chest_gold: 0.9
-  chest_diamond: 0.9
-  chest_jail: 0.9
+  troll_chest: 0.9
+  wooden_chest: 0.9
+  uncommon_chest: 0.9
+  gold_chest: 0.9
+  diamond_chest: 0.9
+  jail_chest: 0.9
 
 home:
   enable: False
