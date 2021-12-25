@@ -243,23 +243,23 @@ def clickButtons():
     return len(buttons)
 
 def treasureCount():
-    chestTroll = positions(images['troll-chest'], threshold=ct['troll-chest'])
-    logger('🟩 %d troll chest detected' % len(chestTroll))
+    chest_troll = positions(images['troll-chest'], threshold=ct['troll-chest'])
+    logger('🟩 %d troll chest detected' % len(chest_troll))
 
-    chestWooden = positions(images['wood-chest'], threshold=ct['wood-chest'])
-    logger('🟩 %d wooden chest detected' % len(chestWooden))
+    chest_wooden = positions(images['wood-chest'], threshold=ct['wood-chest'])
+    logger('🟩 %d wooden chest detected' % len(chest_wooden))
 
-    chestUncommon = positions(images['uncommon-chest'], threshold=ct['uncommon-chest'])
-    logger('🟩 %d uncommon chest detected' % len(chestUncommon))
+    chest_uncommon = positions(images['uncommon-chest'], threshold=ct['uncommon-chest'])
+    logger('🟩 %d uncommon chest detected' % len(chest_uncommon))
 
-    chestGold = positions(images['gold-chest'], threshold=ct['gold-chest'])
-    logger('🟩 %d gold chest detected' % len(chestGold))
+    chest_gold = positions(images['gold-chest'], threshold=ct['gold-chest'])
+    logger('🟩 %d gold chest detected' % len(chest_gold))
 
-    chestDiamond = positions(images['diamond-chest'], threshold=ct['diamond-chest'])
-    logger('🟩 %d diamond chest detected' % len(chestDiamond))
+    chest_diamond = positions(images['diamond-chest'], threshold=ct['diamond-chest'])
+    logger('🟩 %d diamond chest detected' % len(chest_diamond))
 
-    chestJail = positions(images['jail-chest'], threshold=ct['jail-chest'])
-    logger('🟩 %d jail chest detected' % len(chestJail))
+    chest_jail = positions(images['jail-chest'], threshold=ct['jail-chest'])
+    logger('🟩 %d jail chest detected' % len(chest_jail))
 
 def isHome(hero, buttons):
     y = hero[1]

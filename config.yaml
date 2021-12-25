@@ -88,6 +88,13 @@ threshold:
   # Valor padrão: 0.9
   green_bar: 0.9
 
+  chest_troll: 0.9
+  chest_wooden: 0.9
+  chest_uncommon: 0.9
+  chest_gold: 0.9
+  chest_diamond: 0.9
+  chest_jail: 0.9
+
 home:
   enable: False
   # If bot is sending the wrong hero home, make this number bigger.
