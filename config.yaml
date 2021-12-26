@@ -9,7 +9,7 @@ time_intervals:
   #
   # [pt_BR] Intervalo de tempo para verificar se há heróis disponíveis para trabalhar
   # Valor padrão (em minutos): 10
-  send_heroes_for_work: 15
+  send_heroes_for_work: 5
 
   # [en_US] Time interval to update heroes position in the map,
   # Default value (in minutes): 3
@@ -30,7 +30,7 @@ time_intervals:
   #
   # [pt_BR] Intervalo de tempo para verificar se precisa resolver o captcha.
   # Valor padrão (em minutos): 1
-  check_for_captcha: 1
+  check_for_captcha: 20
 
   # [en_US] Time interval to check for login request
   # Default value (in minutes): 3
@@ -38,8 +38,6 @@ time_intervals:
   # [pt_BR] Intervalo de tempo para verificar se existe solicitação de login
   # Valor padrão (em minutos): 5
   check_for_login: 5
-
-  check_chest: 2
 
   # [en_US] Time interval between moviments
   # Default value (in seconds): 1
@@ -88,12 +86,16 @@ threshold:
   # Valor padrão: 0.9
   green_bar: 0.9
 
-  troll_chest: 0.9
-  wooden_chest: 0.9
-  uncommon_chest: 0.9
-  gold_chest: 0.9
-  diamond_chest: 0.9
-  jail_chest: 0.9
+  # [en_US]
+  # Default value: 0.6
+  #
+  # [pt_BR]
+  # Valor padrão: 0.6
+  wood_chest: 0.6
+  uncommon_chest: 0.6
+  gold_chest: 0.6
+  diamond_chest: 0.6
+  jail_chest: 0.6
 
 home:
   enable: False
@@ -114,7 +116,7 @@ scroll_size: 60
 #
 # [pt_BR]
 # Valor padrão: 3
-scroll_attemps: 3
+scroll_attemps: 2
 
 # [en_US]
 # Default value: true

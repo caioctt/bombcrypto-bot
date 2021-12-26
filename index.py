@@ -70,7 +70,7 @@ pyautogui.FAILSAFE = False
 hero_clicks = 0
 login_attempts = 0
 last_log_is_progress = False
-
+all_chests = 10
 
 
 def addRandomness(n, randomn_factor_size=None):
@@ -243,23 +243,32 @@ def clickButtons():
     return len(buttons)
 
 def treasureCount():
-    chest_troll = positions(images['troll-chest'], threshold=ct['troll-chest'])
-    logger('🟩 %d troll chest detected' % len(chest_troll))
+    global all_chests
+    all_chests = 0
 
-    chest_wooden = positions(images['wood-chest'], threshold=ct['wood-chest'])
-    logger('🟩 %d wooden chest detected' % len(chest_wooden))
+    chest_wooden = positions(images['wood-chest'], threshold=ct['wood_chest'])
+    logger('\n🪓 %d wooden chest detected' % len(chest_wooden))
+    all_chests += len(chest_wooden)
 
-    chest_uncommon = positions(images['uncommon-chest'], threshold=ct['uncommon-chest'])
-    logger('🟩 %d uncommon chest detected' % len(chest_uncommon))
+    chest_uncommon = positions(images['uncommon-chest'], threshold=ct['uncommon_chest'])
+    logger('🔮 %d uncommon chest detected' % len(chest_uncommon))
+    all_chests += len(chest_uncommon)
 
-    chest_gold = positions(images['gold-chest'], threshold=ct['gold-chest'])
-    logger('🟩 %d gold chest detected' % len(chest_gold))
+    chest_gold = positions(images['gold-chest'], threshold=ct['gold_chest'])
+    logger('💰 %d gold chest detected' % len(chest_gold))
+    all_chests += len(chest_gold)
 
-    chest_diamond = positions(images['diamond-chest'], threshold=ct['diamond-chest'])
-    logger('🟩 %d diamond chest detected' % len(chest_diamond))
+    chest_diamond = positions(images['diamond-chest'], threshold=ct['diamond_chest'])
+    logger('💎 %d diamond chest detected' % len(chest_diamond))
+    all_chests += len(chest_diamond)
 
-    chest_jail = positions(images['jail-chest'], threshold=ct['jail-chest'])
-    logger('🟩 %d jail chest detected' % len(chest_jail))
+    chest_jail = positions(images['jail-chest'], threshold=ct['jail_chest'])
+    logger('🤑 %d jail chest detected' % len(chest_jail))
+    all_chests += len(chest_jail)
+    
+    logger('💲 %d total chests detected' % all_chests)
+    print('\n')
+    return True
 
 def isHome(hero, buttons):
     y = hero[1]
@@ -302,11 +311,17 @@ def clickGreenBarButtons():
 
     # se tiver botao com y maior que bar y-10 e menor que y+10
     for (x, y, w, h) in not_working_green_bars:
+        global hero_clicks
+        global all_chests
+
+        if (hero_clicks > 3 and all_chests < 3):
+            logger('⚠️ There are few chests on the map, we dont need many heroes')
+            return
+
         # isWorking(y, buttons)
         moveToWithRandomness(x+offset+(w/2),y+(h/2),1)
         pyautogui.click()
-        global hero_clicks
-        hero_clicks = hero_clicks + 1
+        hero_clicks += 1
         if hero_clicks > 20:
             logger('⚠️ Too many hero clicks, try to increase the go_to_work_btn threshold')
             return
@@ -499,17 +514,18 @@ def main():
     "new_map" : 0,
     "check_for_captcha" : 0,
     "refresh_heroes" : 0,
-    "check_chest": 0,
     }
 
     while True:
+        global all_chests
         now = time.time()
 
         if now - last["check_for_captcha"] > addRandomness(t['check_for_captcha'] * 60):
             last["check_for_captcha"] = now
             solveCaptcha(pause)
 
-        if now - last["heroes"] > addRandomness(t['send_heroes_for_work'] * 60):
+        if (now - last["heroes"] > addRandomness(t['send_heroes_for_work'] * 60) or all_chests < 3):
+            treasureCount()
             last["heroes"] = now
             refreshHeroes()
 
@@ -523,15 +539,13 @@ def main():
 
             if clickBtn(images['new-map']):
                 loggerMapClicked()
+                refreshHeroes()
 
         if now - last["refresh_heroes"] > addRandomness( t['refresh_heroes_positions'] * 60):
-            solveCaptcha(pause)
+            # solveCaptcha(pause)
+            treasureCount()
             last["refresh_heroes"] = now
             refreshHeroesPositions()
-
-        if now - last["check_chest"] > addRandomness( t['check_chest'] * 60):
-            last["check_chest"] = now
-            treasureCount()
 
         #clickBtn(teasureHunt)
         logger(None, progress_indicator=True)
