@@ -246,8 +246,10 @@ def treasureCount():
     global all_chests
     all_chests = 0
 
+    print('\n')
+
     chest_wooden = positions(images['wood-chest'], threshold=ct['wood_chest'])
-    logger('\n🪓 %d wooden chest detected' % len(chest_wooden))
+    logger('🪓 %d wooden chest detected' % len(chest_wooden))
     all_chests += len(chest_wooden)
 
     chest_uncommon = positions(images['uncommon-chest'], threshold=ct['uncommon_chest'])
@@ -262,9 +264,9 @@ def treasureCount():
     logger('💎 %d diamond chest detected' % len(chest_diamond))
     all_chests += len(chest_diamond)
 
-    chest_jail = positions(images['jail-chest'], threshold=ct['jail_chest'])
-    logger('🤑 %d jail chest detected' % len(chest_jail))
-    all_chests += len(chest_jail)
+    # chest_jail = positions(images['jail-chest'], threshold=ct['jail_chest'])
+    # logger('🤑 %d jail chest detected' % len(chest_jail))
+    # all_chests += len(chest_jail)
     
     logger('💲 %d total chests detected' % all_chests)
     print('\n')
