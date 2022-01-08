@@ -70,7 +70,8 @@ pyautogui.FAILSAFE = False
 hero_clicks = 0
 login_attempts = 0
 last_log_is_progress = False
-all_chests = 10
+all_chests = 0
+hero_working = 0
 
 
 def addRandomness(n, randomn_factor_size=None):
@@ -235,7 +236,7 @@ def clickButtons():
         moveToWithRandomness(x+(w/2),y+(h/2),1)
         pyautogui.click()
         global hero_clicks
-        hero_clicks = hero_clicks + 1
+        hero_clicks += 1
         #cv2.rectangle(sct_img, (x, y) , (x + w, y + h), (0,255,255),2)
         if hero_clicks > 20:
             logger('too many hero clicks, try to increase the go_to_work_btn threshold')
@@ -301,22 +302,27 @@ def clickGreenBarButtons():
     logger('🟩 %d green bars detected' % len(green_bars))
     buttons = positions(images['go-work'], threshold=ct['go_to_work_btn'])
     logger('🆗 %d buttons detected' % len(buttons))
+    # on_working = positions(images['on-work'], threshold=ct['go_to_work_btn'])
+    # logger(' %d heroes on working detected' % len(on_working))
 
+    rest_buttons = positions(images['rest-button'], threshold=ct['go_to_work_btn'])
+
+    global hero_clicks
+    global all_chests
 
     not_working_green_bars = []
     for bar in green_bars:
         if not isWorking(bar, buttons):
             not_working_green_bars.append(bar)
+
     if len(not_working_green_bars) > 0:
         logger('🆗 %d buttons with green bar detected' % len(not_working_green_bars))
         logger('👆 Clicking in %d heroes' % len(not_working_green_bars))
 
     # se tiver botao com y maior que bar y-10 e menor que y+10
     for (x, y, w, h) in not_working_green_bars:
-        global hero_clicks
-        global all_chests
 
-        if (hero_clicks > 3 and all_chests < 3):
+        if (len(rest_buttons) > 4 and all_chests < 3):
             logger('⚠️ There are few chests on the map, we dont need many heroes')
             return
 
@@ -350,6 +356,24 @@ def clickFullBarButtons():
         hero_clicks = hero_clicks + 1
 
     return len(not_working_full_bars)
+
+def checkWorkingHeroes():
+    offset = 130
+    rest_buttons = positions(images['rest-button'], threshold=ct['go_to_work_btn'])
+    logger('%d heroes on work' % len(rest_buttons))
+
+    for (x, y, w, h) in rest_buttons:
+        if (rest_buttons <= 4):
+            return
+            
+        moveToWithRandomness(x+(w/2),y+(h/2),1)
+        pyautogui.click()
+        #cv2.rectangle(sct_img, (x, y) , (x + w, y + h), (0,255,255),2)
+        if hero_clicks > 20:
+            logger('too many hero clicks, try to increase the go_to_work_btn threshold')
+            return
+    return len(rest_buttons)
+
 
 def goToHeroes():
     if clickBtn(images['go-back-arrow']):
@@ -471,12 +495,13 @@ def sendHeroesHome():
 
 
 
-
-
 def refreshHeroes():
     logger('🏢 Search for heroes to work')
 
     goToHeroes()
+
+    global hero_clicks
+    global all_chests
 
     if c['select_heroes_mode'] == "full":
         logger('⚒️ Sending heroes with full stamina bar to work', 'green')
