@@ -65,7 +65,7 @@ pyautogui.FAILSAFE = False
 hero_clicks = 0
 login_attempts = 0
 last_log_is_progress = False
-all_chests = 0
+all_chests = 3
 hero_working = 0
 
 def addRandomness(n, randomn_factor_size=None):
@@ -131,9 +131,6 @@ def loadHeroesToSendHome():
     return heroes
 
 
-
-
-
 def show(rectangles, img = None):
     """ Show an popup with rectangles showing the rectangles[(x, y, w, h),...]
         over img or a printSreen if no img provided. Useful for debugging"""
@@ -149,9 +146,6 @@ def show(rectangles, img = None):
     # cv2.rectangle(img, (result[0], result[1]), (result[0] + result[2], result[1] + result[3]), (255,50,255), 2)
     cv2.imshow('img',img)
     cv2.waitKey(0)
-
-
-
 
 
 def clickBtn(img, timeout=3, threshold = ct['default']):
@@ -289,6 +283,14 @@ def isWorking(bar, buttons):
             return False
     return True
 
+def clickRestAll():
+
+    offset = 100
+    #ajustar o threshold
+    clickBtn(images['rest-all'])
+
+    return True
+
 def clickGreenBarButtons():
     # ele clicka nos q tao trabaiano mas axo q n importa
     offset = 140
@@ -299,8 +301,6 @@ def clickGreenBarButtons():
     logger('🆗 %d buttons detected' % len(buttons))
     # on_working = positions(images['on-work'], threshold=ct['go_to_work_btn'])
     # logger(' %d heroes on working detected' % len(on_working))
-
-    rest_buttons = positions(images['rest-button'], threshold=ct['go_to_work_btn'])
 
     global hero_clicks
     global all_chests
@@ -316,22 +316,25 @@ def clickGreenBarButtons():
 
     # se tiver botao com y maior que bar y-10 e menor que y+10
     hero_clicks_cnt = 0
-    for (x, y, w, h) in not_working_green_bars:
 
-        if (len(rest_buttons) > 4 and all_chests < 3):
+    for (x, y, w, h) in not_working_green_bars:
+        # isWorking(y, buttons)
+        global hero_clicks
+        if (hero_clicks >= 2 and all_chests < 2):
             logger('⚠️ There are few chests on the map, we dont need many heroes')
             return
 
-        # isWorking(y, buttons)
         moveToWithRandomness(x+offset+(w/2),y+(h/2),1)
         pyautogui.click()
-        global hero_clicks
         hero_clicks = hero_clicks + 1
         hero_clicks_cnt = hero_clicks_cnt + 1
+        logger('hero_clicks %d ' % hero_clicks)
+        logger('hero_counts %d ' % hero_clicks_cnt)
         if hero_clicks_cnt > 20:
             logger('⚠️ Too many hero clicks, try to increase the go_to_work_btn threshold')
             return
         #cv2.rectangle(sct_img, (x, y) , (x + w, y + h), (0,255,255),2)
+
     return len(not_working_green_bars)
 
 def clickFullBarButtons():
@@ -354,23 +357,6 @@ def clickFullBarButtons():
         hero_clicks = hero_clicks + 1
 
     return len(not_working_full_bars)
-
-def checkWorkingHeroes():
-    offset = 130
-    rest_buttons = positions(images['rest-button'], threshold=ct['go_to_work_btn'])
-    logger('%d heroes on work' % len(rest_buttons))
-
-    for (x, y, w, h) in rest_buttons:
-        if (rest_buttons <= 4):
-            return
-            
-        moveToWithRandomness(x+(w/2),y+(h/2),1)
-        pyautogui.click()
-        #cv2.rectangle(sct_img, (x, y) , (x + w, y + h), (0,255,255),2)
-        if hero_clicks > 20:
-            logger('too many hero clicks, try to increase the go_to_work_btn threshold')
-            return
-    return len(rest_buttons)
 
 
 def goToHeroes():
@@ -488,7 +474,37 @@ def sendHeroesHome():
         else:
             print('hero already home, or home full(no dark home button)')
 
+def refreshOnFewChests():
+    logger('🏢 Search for heroes  rest and work')
 
+    goToHeroes()
+
+    global hero_clicks
+    global all_chests
+
+    clickRestAll()
+
+    buttonsClicked = 1
+    empty_scrolls_attempts = c['scroll_attemps']
+
+    while(empty_scrolls_attempts > 0):
+        if c['select_heroes_mode'] == 'full':
+            buttonsClicked = clickFullBarButtons()
+        elif c['select_heroes_mode'] == 'green':
+            buttonsClicked = clickGreenBarButtons()
+        else:
+            buttonsClicked = clickButtons()
+
+        if hero_clicks >= 2 and all_chests < 2:
+            empty_scrolls_attempts = empty_scrolls_attempts - 1
+
+        if buttonsClicked == 0:
+            empty_scrolls_attempts = empty_scrolls_attempts - 1
+        scroll()
+        time.sleep(2)
+    logger('💪 {} heroes sent to work'.format(hero_clicks))
+    hero_clicks = 0
+    goToGame()
 
 def refreshHeroes():
     logger('🏢 Search for heroes to work')
@@ -523,6 +539,7 @@ def refreshHeroes():
         scroll()
         time.sleep(2)
     logger('💪 {} heroes sent to work'.format(hero_clicks))
+    hero_clicks = 0
     goToGame()
 
 
@@ -553,9 +570,11 @@ def main():
     last = {
     "login" : 0,
     "heroes" : 0,
+    "2heroes" : 0,
     "new_map" : 0,
     "check_for_captcha" : 0,
     "refresh_heroes" : 0,
+    "treasure": 0,
     }
     # =========
 
@@ -566,10 +585,21 @@ def main():
         if now - last["check_for_captcha"] > addRandomness(t['check_for_captcha'] * 60):
             last["check_for_captcha"] = now
 
-        if (now - last["heroes"] > addRandomness(t['send_heroes_for_work'] * 60) or all_chests < 3):
+        if now - last["treasure"] > addRandomness(t['check_for_treasures'] * 60):
+            last["treasure"] = now
             treasureCount()
+            if (now - last["2heroes"] > addRandomness(t['send_2_heroes_for_work'] * 60) and all_chests < 2):
+                last["heroes"] = now
+                last["2heroes"] = now
+                refreshOnFewChests()
+
+        if (now - last["heroes"] > addRandomness(t['send_heroes_for_work'] * 60) and all_chests >= 2):
             last["heroes"] = now
             refreshHeroes()
+        # elif (now - last["heroes"] > addRandomness(t['send_heroes_for_work'] * 60) and all_chests < 2):
+        #     last["heroes"] = now
+        #     refreshOnFewChests()
+
 
         if now - last["login"] > addRandomness(t['check_for_login'] * 60):
             sys.stdout.flush()
@@ -585,7 +615,6 @@ def main():
 
         if now - last["refresh_heroes"] > addRandomness( t['refresh_heroes_positions'] * 60):
             # solveCaptcha(pause)
-            treasureCount()
             last["refresh_heroes"] = now
             refreshHeroesPositions()
 
@@ -610,5 +639,3 @@ if __name__ == '__main__':
 
 # colocar o botao em pt
 # soh resetar posiçoes se n tiver clickado em newmap em x segundos
-
-

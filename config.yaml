@@ -9,14 +9,16 @@ time_intervals:
   #
   # [pt_BR] Intervalo de tempo para verificar se há heróis disponíveis para trabalhar
   # Valor padrão (em minutos): 10
-  send_heroes_for_work: 14
+  send_heroes_for_work: 13
+
+  send_2_heroes_for_work: 5
 
   # [en_US] Time interval to update heroes position in the map,
   # Default value (in minutes): 3
   #
   # [pt_BR] Intervalo de tempo para atualizar a posição dos heróis no mapa
   # Valor padrão (em minutos): 3
-  refresh_heroes_positions: 3
+  refresh_heroes_positions: 4
 
   # [en_US] Time interval to check for new maps
   # Default value (in minutes): 5
@@ -38,6 +40,13 @@ time_intervals:
   # [pt_BR] Intervalo de tempo para verificar se existe solicitação de login
   # Valor padrão (em minutos): 5
   check_for_login: 5
+
+  # [en_US] Time interval to check for treasures
+  # Default value (in minutes): 2
+  #
+  # [pt_BR] Intervalo de tempo para verificar quantidade de tesouros
+  # Valor padrão (em minutos): 2
+  check_for_treasures: 2
 
   # [en_US] Time interval between moviments
   # Default value (in seconds): 1
@@ -87,11 +96,17 @@ threshold:
   green_bar: 0.9
 
   # [en_US]
+  # Default value: 0.5
+  #
+  # [pt_BR]
+  # Valor padrão: 0.5
+  wood_chest: 0.5
+
+  # [en_US]
   # Default value: 0.6
   #
   # [pt_BR]
   # Valor padrão: 0.6
-  wood_chest: 0.6
   uncommon_chest: 0.6
   gold_chest: 0.6
   diamond_chest: 0.6
