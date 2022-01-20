@@ -110,6 +110,7 @@ threshold:
   uncommon_chest: 0.6
   gold_chest: 0.6
   diamond_chest: 0.6
+  key_chest: 0.6
   jail_chest: 0.6
 
 home:

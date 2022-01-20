@@ -254,6 +254,10 @@ def treasureCount():
     logger('💎 %d diamond chest detected' % len(chest_diamond))
     all_chests += len(chest_diamond)
 
+    chest_key = positions(images['key-chest'], threshold=ct['key_chest'])
+    logger('💎 %d key chest detected' % len(chest_key))
+    all_chests += len(chest_key)
+
     # chest_jail = positions(images['jail-chest'], threshold=ct['jail_chest'])
     # logger('🤑 %d jail chest detected' % len(chest_jail))
     # all_chests += len(chest_jail)
@@ -496,7 +500,7 @@ def refreshOnFewChests():
             buttonsClicked = clickButtons()
 
         if hero_clicks >= 2 and all_chests < 2:
-            empty_scrolls_attempts = empty_scrolls_attempts - 1
+            empty_scrolls_attempts = -1
 
         if buttonsClicked == 0:
             empty_scrolls_attempts = empty_scrolls_attempts - 1
@@ -596,9 +600,6 @@ def main():
         if (now - last["heroes"] > addRandomness(t['send_heroes_for_work'] * 60) and all_chests >= 2):
             last["heroes"] = now
             refreshHeroes()
-        # elif (now - last["heroes"] > addRandomness(t['send_heroes_for_work'] * 60) and all_chests < 2):
-        #     last["heroes"] = now
-        #     refreshOnFewChests()
 
 
         if now - last["login"] > addRandomness(t['check_for_login'] * 60):
